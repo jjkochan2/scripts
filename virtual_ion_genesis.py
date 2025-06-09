@@ -30,17 +30,21 @@ def human_readable_sensor_output(data):
     if data:
         # if the response passes the checksum
         if sum(data[:len(data) - 1]) % 256 == data[len(data) - 1]:
-            water_level = 0
-            for byte in data[1:4]:
-                water_level += int(byte)
-            water_level /= 10
-            if data[7] == 0:
-                version = '25"'
-            elif data[7] == 1:
-                version = '72"'
+            # if the data is the correct length
+            if len(data) == 9:
+                water_level = 0
+                for byte in data[1:4]:
+                    water_level += int(byte)
+                water_level /= 10
+                if data[7] == 0:
+                    version = '25"'
+                elif data[7] == 1:
+                    version = '72"'
+                else:
+                    version = 'Unknown'
+                return f"Water Level = {water_level}\tVersion = {version}"
             else:
-                version = 'Unknown'
-            return f"Water Level = {water_level}\tVersion = {version}"
+                return "Data incorrect length"
         else:
             return "Response failed checksum"
 
